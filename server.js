@@ -14,3 +14,4 @@ console.log(os.platform()) */
 //console.log(math.subtract(10, 4))
 console.log(subtract(10, 4))
 console.log(multiply(3, 5))
+console.log(divide(15, 3))
