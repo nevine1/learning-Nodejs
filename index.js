@@ -1,11 +1,15 @@
-const fs = require('fs')
-fs.readFile('./files/lorem.txt','utf8', (err, data) => {
-    if(err) throw err;
-    console.log(data.toString())
+const fsPromises = require(`fs`).promises;
+const path = require('path');
 
-})
 
-process.on('uncaughtException',err =>{
-    console.error(`There was an uncaught error: ${err}`);
-    process.exit(1)
-})
+const fileOps = async () =>{
+    try{
+        const data = await fsPromises.readFile(path.join(__dirname, `files`, `first.txt`), `utf8`);
+        console.log(data);
+        await fsPromises.writeFile(path.join(__dirname, `files`, `newFile.txt`), data)
+    }catch(err){
+        console.error(err)
+    }
+}
+
+fileOps();
