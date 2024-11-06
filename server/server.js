@@ -1,18 +1,53 @@
 const http = require('http');
-
+const fs = require('fs');
+const _ = require('lodash')
 const server = http.createServer((req, res) => {
-    console.log('request sent')
-    console.log(req.method, req.url);
     
-    //set header types 
-    res.setHeader('Content-Type', 'text/html');
-    res.write('<h1>This is res header</h1>');
-    res.write('<p>Hello response </p>');
-    res.end();
-    console.log(res.headers);
-    
-})
+    const num = _.random(0, 10)
+    console.log(num)
 
-server.listen(3000, 'localhost', () =>{
-    console.log('listen to server is done')
-})
+    //once means use it only one time
+    const greeting = _.once(() =>{
+        console.log('hello lodash')
+    })
+    greeting();
+
+    // Set header type
+    res.setHeader('Content-Type', 'text/html');
+
+    let path = './views/';
+    switch (req.url) {
+        case "/":
+            path += "index.html"; 
+            res.statusCode = 200;
+            break;
+        case "/about":
+            path += "about.html"; 
+            res.statusCode = 200;
+            break;
+        case "/about-bla":
+            res.statusCode = 301; 
+            res.setHeader('Location', '/about');
+            res.end();
+            break; 
+        default: 
+            path += "404.html";
+            res.statusCode = 404; 
+            break;       
+    }
+
+    // Read the file based on the computed `path` variable
+    fs.readFile(path, (err, data) => {
+        if (err) {
+            console.log(err);
+            res.end();
+        } else {
+            //res write data 
+            res.end(data);
+        }
+    });
+});
+
+server.listen(3000, 'localhost', () => {
+    console.log('Server is listening on port 3000');
+});
