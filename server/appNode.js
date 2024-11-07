@@ -10,7 +10,7 @@ app.listen(3000)// return an instance of the server
 
 app.get('/', (req, res) =>{
 
-    res.render(`./views/index.html`, {root: __dirname})
+    res.sendFile(`./views/index.html`, {root: __dirname})
 
 });
 
