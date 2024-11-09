@@ -2,6 +2,7 @@ require("dotenv").config()
 const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
+const Blog = require('./models/blog');
 // express app
 const app = express();
 
@@ -42,4 +43,17 @@ app.get('/blogs/create', (req, res) =>{
 //404 page 
 app.use((req, res) =>{
     res.status(404).render('404', {title: '404'})
+})
+
+//connect the model blog to the database and
+app.get('/add-blog', (req, res) =>{
+    const blog = new Blog({
+        title: "New Blog", 
+        snippet: "about me new blog ", 
+        body: "moreeeeeeeeee about my new blog "
+    });
+    blog.save()
+    .then((result) =>{
+        res.send(result)
+    }).catch((err) =>console.log(err))//this blog here is the one created above with the title, ... snippent ..and body : '''''
 })
