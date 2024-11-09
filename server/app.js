@@ -1,12 +1,20 @@
+require("dotenv").config()
 const express = require('express');
-
+const morgan = require('morgan');
+const mongoose = require('mongoose');
 // express app
 const app = express();
 
+//connect to mongoDB
+//const dbURI="mongodb+srv://user1database:database1@node-tutorial.myedr.mongodb.net/?retryWrites=true&w=majority&appName=nodeTutorial"
+const dbURI= "mongodb+srv://user1database:database1@nodetutorial.myedr.mongodb.net/?retryWrites=true&w=majority&appName=nodeTutorial"
+mongoose.connect(dbURI)
+.then((result) => app.listen(3000))
+.catch((err) => console.log(err))
 //register view engine 
 app.set('view engine', 'ejs')
 //listen for requests
-app.listen(3000)// return an instance of the server
+//app.listen(3000)// return an instance of the server
 
 app.get('/', (req, res) => {
 
