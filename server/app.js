@@ -46,11 +46,12 @@ app.use((req, res) =>{
 })
 
 //connect the model blog to the database and
-app.get('/add-blog', (req, res) =>{
+app.get('/add-blog', (req, res) => {
+    //create a new instance of the blog called const blog = ....
     const blog = new Blog({
-        title: "New Blog", 
-        snippet: "about me new blog ", 
-        body: "moreeeeeeeeee about my new blog "
+        title: 'New Blog', 
+        snippet: 'about me new blog', 
+        body: 'more about my new blog'
     });
     blog.save()
     .then((result) =>{

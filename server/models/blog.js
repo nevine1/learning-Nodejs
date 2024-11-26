@@ -3,15 +3,15 @@ const Schema = mongoose.Schema;
 
 const blogSchema = new Schema({
     title: {
-        type: string,
+        type: String,
         required: true,
     }, 
     snippet: {
-        type: string,
+        type: String,
         required: true,
     }, 
     body: {
-        type: string,
+        type: String,
         required: true,
     }
 }, {
