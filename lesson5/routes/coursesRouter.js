@@ -1,20 +1,22 @@
 const express = require('express');
-const router = express.router();
+const router = express.Router();
 
 const coursesController = require('../data/coursesController');
 
-router.get("/api/courses/:id", coursesController.getAllCourses);
+router.get("/", coursesController.getAllCourses);
 
 //create new post ; 
-router.post("/api/courses", 
+router.post("/", 
 
-    coursesController.newCourseValidation,
+    coursesController.validationSchema,
 
    coursesController.addNewCourse);
 
 
 //updating course using course Id;
-router.patch("/api/courses/:id", coursesController.updateExistingCourse)
+router.patch("/:id", coursesController.updateExistingCourse)
 
 //deleting course using course id ;
-router.delete("/api/courses/:id", coursesController.deleteExistingCourse)
+router.delete("/:id", coursesController.deleteExistingCourse);
+
+module.exports = router;
