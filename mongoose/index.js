@@ -12,4 +12,10 @@ mongoose.connect(url).then(() =>{
     console.log("connected to mongoose ")
 });
 
-//interacting with database data
+const allCoursesRouter = require('./routes/coursesRouter');
+
+
+app.use("/api/courses/", allCoursesRouter);
+app.listen(4000, () =>{
+    console.log('listening to post 4000')
+})

@@ -31,14 +31,14 @@ const main = async () => {
     //insert many items at the same time using: insertMany 
     await collection.insertMany(
        [ 
-        {
+        /* {
             title: "html5", 
             price: "200$"
         }, 
         {
             title: "CSS5", 
             price: "125$"
-        }
+        } */
         ]
     )
 
