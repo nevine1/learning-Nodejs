@@ -1,43 +1,67 @@
-let { courses } = require('../data/courses')
+/* let { courses } = require('../data/courses') */
 const { body, validationResult } = require('express-validator');
 const Course = require('../models/courses.model');
-const validationSchema =  () =>{
-    return [
-        body('title')
-            .notEmpty()
-            .isLength({min: 5})
-            .withMessage('Course title must be at least 5 char'),
-        body('price')
-            .notEmpty()
-        ]
-}
-const getAllCourses = async (req, res) => { 
-     const courses = await Course.find();
-    res.json(courses); 
+const validationSchema = () => [
+    body('title')
+        .notEmpty()
+        .isLength({ min: 5 })
+        .withMessage('Course title must be at least 5 characters'),
+    body('price')
+        .notEmpty()
+        .withMessage('Price is required')
+];
 
-    /* try {
-        const courses = await Course.find();
-        console.log('Courses retrieved:', courses);
-        res.json(courses);
-    } catch (err) {
-        console.error('Error fetching courses:', err);
-        res.status(500).json({ error: 'Failed to fetch courses' });
-    } */
+//get all courses route
+const getAllCourses = async (req, res) => { 
+
+     try{
+        const course = await Course.find();
+        return res.json();
+
+     } catch (err){
+        console.error("Can not get the course", err)
+     }
+    
 }
 
 const addNewCourse = async (req, res) => { 
 
    const errors = validationResult(req);
+
    if(!errors.isEmpty()){
        return res.status(400).json({error: errors.array()})
    }
-   const { title, price } = req.body; 
-   const newCourse = new Course(req.body);
-   await newCourse.save();
-   return res.status(200).json(newCourse)
+
+   try{
+
+    const { title, price } = req.body; 
+    const newCourse = new Course({ title, price } );
+    await newCourse.save();
+    return res.status(200).json(newCourse)
+
+   }catch(err){
+
+    console.error("Can not add a new course", err);
+   }
+   
    
 
 }
+const getCourseById = async (req, res) => {
+  
+    try{
+        const course = await Course.findById(req.params.id);
+        return res.json(course)
+
+        if(!course){
+            return res.status(400).json("course not found")
+        }
+        }catch(err){
+            console.error("can not find this id:", err)
+        }
+
+    }
+
 
 const updateExistingCourse = (req, res) => {
     const courseId = parseInt(req.params.id) //parseInt to convert id to integer 
@@ -67,6 +91,7 @@ const deleteExistingCourse = (req, res) =>{
 module.exports = {
     getAllCourses,
     addNewCourse,
+    getCourseById,
     deleteExistingCourse,
     updateExistingCourse,
     validationSchema
