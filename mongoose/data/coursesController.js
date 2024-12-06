@@ -1,4 +1,4 @@
-/* let { courses } = require('../data/courses') */
+
 const { body, validationResult } = require('express-validator');
 const Course = require('../models/courses.model');
 const validationSchema = () => [
@@ -15,8 +15,8 @@ const validationSchema = () => [
 const getAllCourses = async (req, res) => { 
 
      try{
-        const course = await Course.find();
-        return res.json();
+        const courses = await Course.find();
+        return res.json(courses);
 
      } catch (err){
         console.error("Can not get the course", err)
@@ -42,20 +42,21 @@ const addNewCourse = async (req, res) => {
    }catch(err){
 
     console.error("Can not add a new course", err);
-   }
-   
-   
+   }  
 
 }
 const getCourseById = async (req, res) => {
   
     try{
+        const id = req.params.courseId
+        console.log(id)
         const course = await Course.findById(req.params.id);
         return res.json(course)
 
         if(!course){
             return res.status(400).json("course not found")
         }
+
         }catch(err){
             console.error("can not find this id:", err)
         }
@@ -63,29 +64,34 @@ const getCourseById = async (req, res) => {
     }
 
 
-const updateExistingCourse = (req, res) => {
-    const courseId = parseInt(req.params.id) //parseInt to convert id to integer 
-    const course = courses.find((course) => course.id === courseId);
-console.log(courseId)
-    if(!course){
-        return res.status(400).json("course not found")
+const updateExistingCourse = async (req, res) => {
+
+    try{
+        const id = req.params.id; 
+        console.log(id)
+        const updateCourse = await Course.findByIdAndUpdate(id, {$set: {...req.body}});
+        return res.json(updateCourse);
+
+    }catch(err){
+
+        return res.status(400).json({error: err})
     }
-    const updatedCourse = {...req.body};
-    
-    console.log(updatedCourse);
-    res.json(updatedCourse);
+   
 
 }
 
-const deleteExistingCourse = (req, res) =>{
-    const courseId = parseInt(req.params.id);
-    const newCourseList = courses.filter((course) =>course.id !== courseId);
-
-    if(newCourseList.length === courses.length){
-        return res.status(4000).json({error: "Course not found"});
+const deleteExistingCourse = async (req, res) =>{
+    
+    try{
+        const id = req.params.id; 
+         await Course.findByIdAndDelete(id);
+         
+         // to return the all courses after delete one course; 
+         const courses = await Course.find();
+        return res.json(courses)
+    }catch(err){
+        return res.json({error: err})
     }
-
-    res.json(newCourseList);
 }
 
 module.exports = {
