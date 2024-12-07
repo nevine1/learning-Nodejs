@@ -16,7 +16,10 @@ const getAllCourses = async (req, res) => {
 
      try{
         const courses = await Course.find();
-        return res.json(courses);
+
+        //modifying res by using JSend
+        //return res.json({ status: "success", data: {courses: courses} }); returned data is an object
+        return res.json({ status: "success", data: {courses} });
 
      } catch (err){
         console.error("Can not get the course", err)
@@ -29,19 +32,23 @@ const addNewCourse = async (req, res) => {
    const errors = validationResult(req);
 
    if(!errors.isEmpty()){
-       return res.status(400).json({error: errors.array()})
+       return res.status(400).json({status: "fail", data:  errors.array()})
    }
 
    try{
 
-    const { title, price } = req.body; 
-    const newCourse = new Course({ title, price } );
-    await newCourse.save();
-    return res.status(200).json(newCourse)
+        const { title, price } = req.body;
 
-   }catch(err){
+        const newCourse = new Course({ title, price } );
+        
+        await newCourse.save();
 
-    console.error("Can not add a new course", err);
+        //return res.json({ status: 'success', data: { courses: courses } });
+        return res.json({ status: 'success', data: { courses: newCourse} }); // or return all courses data: {courses}
+
+    }catch(err){
+
+    return res.json({ status: 'error', data: null, message: err.message, code: 40});
    }  
 
 }
@@ -51,14 +58,14 @@ const getCourseById = async (req, res) => {
         const id = req.params.courseId
         console.log(id)
         const course = await Course.findById(req.params.id);
-        return res.json(course)
+        return res.json({ status: "success", data: { course }});
 
         if(!course){
-            return res.status(400).json("course not found")
+            return res.status(404).json({ status: "failure", data: {course: "course not found"}})
         }
 
         }catch(err){
-            console.error("can not find this id:", err)
+            return res.json({ status: "error", data : null , message: err.message, code: 400})
         }
 
     }
@@ -70,11 +77,11 @@ const updateExistingCourse = async (req, res) => {
         const id = req.params.id; 
         console.log(id)
         const updateCourse = await Course.findByIdAndUpdate(id, {$set: {...req.body}});
-        return res.json(updateCourse);
+        return res.json({ status: 'success', data: { updateCourse }});
 
     }catch(err){
 
-        return res.status(400).json({error: err})
+        return res.status(400).json({ status: "error", data: { course: null }})
     }
    
 
@@ -84,13 +91,16 @@ const deleteExistingCourse = async (req, res) =>{
     
     try{
         const id = req.params.id; 
+
          await Course.findByIdAndDelete(id);
          
          // to return the all courses after delete one course; 
          const courses = await Course.find();
-        return res.json(courses)
+
+        return res.json({ status: "success", data: null}); //we can return null or return all courses
+        //return res.json({ status: "success", data: { courses }})
     }catch(err){
-        return res.json({error: err})
+        return res.json({ status: "error", data: null, message: err.message, code: 400})
     }
 }
 
