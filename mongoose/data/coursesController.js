@@ -15,7 +15,11 @@ const validationSchema = () => [
 const getAllCourses = async (req, res) => { 
 
      try{
-        const courses = await Course.find();
+        //const courses = await Course.find();
+        const courses = await Course.find({}, {"__v": false, "price": false})
+        //Course.find({}, {"__v": false, "price": false})
+        //{} means fetch all the data
+        //the second "__v": false, means do not fetch __v , Price: false means do not fetch price 
 
         //modifying res by using JSend
         //return res.json({ status: "success", data: {courses: courses} }); returned data is an object
