@@ -15,8 +15,13 @@ const validationSchema = () => [
 const getAllCourses = async (req, res) => { 
 
      try{
+        const query = req.query;
+        console.log(query);
+        const limit = query.limit || 2; 
+        const page = query.page || 1;
+        const skip = (page - 1) * 2;
         //const courses = await Course.find();
-        const courses = await Course.find({}, {"__v": false, "price": false})
+        const courses = await Course.find( {"__v": false}).limit(limit).skip(skip);
         //Course.find({}, {"__v": false, "price": false})
         //{} means fetch all the data
         //the second "__v": false, means do not fetch __v , Price: false means do not fetch price 
