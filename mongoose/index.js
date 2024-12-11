@@ -23,7 +23,7 @@ const allUsersRouter = require('./routes/usersRouter');
 app.use("/api/courses/", allCoursesRouter);
 
 //getting user router 
-app.use("/api/users/", allUsersRouter);
+app.use("/api/users", allUsersRouter);
 
 //if the route is not existing  ;
 app.all("*", (req, res, next) =>{

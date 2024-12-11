@@ -1,6 +1,7 @@
 
 const { body, validationResult } = require('express-validator');
 const User = require('../models/users.model');
+const bcrypt = require('bcrypt');
 /* const validationSchema = () => [
     body('title')
         .notEmpty()
@@ -11,7 +12,7 @@ const User = require('../models/users.model');
         .withMessage('Price is required')
 ]; */
 
-//get all courses route
+//get all users
 const getAllUsers = async (req, res) => { 
 
     try{
@@ -20,8 +21,8 @@ const getAllUsers = async (req, res) => {
         const page = query.page; 
         const skip = (page - 1 ) * limit;
 
-        const users = User.find({}, {"__v": false}).limit(limit).skit(skip);
-        
+        const users = await User.find({}, {"__v": false, "password": false }).limit(limit).skip(skip); //I do not need to return password and version
+
         return res.json({
             status: 'success',
             data: { users }, 
@@ -44,19 +45,35 @@ const register = async (req, res) => {
    }
 
    try{
+   
 
-        const { firstName, lastName, email, password } = req.body;
+    const { firstName, lastName, email, password } = req.body;
 
-        const newUser = new User({ firstName, lastName, email, password} );
+    //check by email if the user exists or not 
+    const existingUser = await User.findOne({email: email})
+
+    if(existingUser){
+
+        return res.status(400).json("This email is already registered");
+
+        }else{
+
+        //hashing password 
+        const hashedPass = await bcrypt.hash(password, 10 );
+            const newUser = new User({ firstName, lastName, email, password: hashedPass });
         
         await newUser.save();
-
        
-        return res.json({ status: 'success', data: { courses: newUser} }); // or return all courses data: {courses}
+        return res.json({ status: 'success', data: {user: newUser}, message: "New user added successfully" }); // or return all courses data: {courses}
+   
 
+        }
+    
+
+        
     }catch(err){
 
-    return res.json({ status: 'error', data: null, message: err.message, code: 40});
+    return res.json({ status: 'error', data: null, message: err.message, code: 400});
    }  
 
 }
