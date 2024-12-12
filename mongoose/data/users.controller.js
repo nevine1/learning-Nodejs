@@ -1,7 +1,7 @@
 
 const User = require('../models/users.model');
 const bcrypt = require('bcrypt');
-
+const jwt = require('jsonwebtoken');
 
 //get all users
 const getAllUsers = async (req, res) => { 
@@ -43,10 +43,13 @@ const register = async (req, res) => {
 
         //hashing password 
         const hashedPass = await bcrypt.hash(password, 10 );
-            const newUser = new User({ firstName, lastName, email, password: hashedPass });
-        
+
+        const newUser = new User({ firstName, lastName, email, password: hashedPass });
+
+        //generating jwt to use it for login the registered new user
+        const token = await  jwt.sign({email: newUser.email, id: newUser._id}, process.env.JWT_SECRET_KEY)
         await newUser.save();
-       
+       console.log(token)
         return res.json({ status: 'success', data: {user: newUser}, message: "New user added successfully" }); // or return all courses data: {courses}
    
 
