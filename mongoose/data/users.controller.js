@@ -1,16 +1,7 @@
 
-const { body, validationResult } = require('express-validator');
 const User = require('../models/users.model');
 const bcrypt = require('bcrypt');
-/* const validationSchema = () => [
-    body('title')
-        .notEmpty()
-        .isLength({ min: 5 })
-        .withMessage('Course title must be at least 5 characters'),
-    body('price')
-        .notEmpty()
-        .withMessage('Price is required')
-]; */
+
 
 //get all users
 const getAllUsers = async (req, res) => { 
@@ -32,20 +23,12 @@ const getAllUsers = async (req, res) => {
     }catch(err){
         return res.json({ status: 'error', data: null,  message: err.message, code: 400})
     }
-   
-    
 }
 
 const register = async (req, res) => { 
 
-   const errors = validationResult(req);
-
-   if(!errors.isEmpty()){
-       return res.status(400).json({status: "fail", data:  errors.array()})
-   }
 
    try{
-   
 
     const { firstName, lastName, email, password } = req.body;
 
@@ -79,7 +62,34 @@ const register = async (req, res) => {
 }
 
 
-const login = (req, res) => {}
+const login = async (req, res) => {
+
+    try{
+        const { email, password } = req.body;
+
+        if(!email && !password ){
+
+            return res.json({ status: 'error', data: null, message: "Email and password should not be empty"})
+        
+        }else{
+            const user = await User.findOne({email: email});
+
+            if(!user){
+                return res.json({ status: 'error', data: null, message: "This user not found"})
+            }
+            //to get the password from the database hashed password
+            const matchedPassword = await bcrypt.compare( password, user.password ); // user.password it comes from the req.body password
+
+            if(user && matchedPassword){
+                return res.json({ status: 'success', data:{user }})
+            }
+        }
+        
+        
+    }catch(err){
+        return res.json({ status: 'error', message: err.message, code: 400})
+    }
+}
 
 
 module.exports = {
