@@ -2,6 +2,7 @@
 const User = require('../models/users.model');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const {} = require("../utils/generateJWT")
 
 //get all users
 const getAllUsers = async (req, res) => { 
@@ -27,7 +28,6 @@ const getAllUsers = async (req, res) => {
 
 const register = async (req, res) => { 
 
-
    try{
 
     const { firstName, lastName, email, password } = req.body;
@@ -47,13 +47,21 @@ const register = async (req, res) => {
         const newUser = new User({ firstName, lastName, email, password: hashedPass });
 
         //generating jwt to use it for login the registered new user
-        const token = await  jwt.sign({email: newUser.email, id: newUser._id}, process.env.JWT_SECRET_KEY)
+        const token = await  jwt.sign({
+                    email: newUser.email,
+                    id: newUser._id
+                        }, 
+                    process.env.JWT_SECRET_KEY, 
+                    { expiresIn: '10minutes'}
+                    );
+        newUser.token = token;
+        console.log(token)
         await newUser.save();
        console.log(token)
-        return res.json({ status: 'success', data: {user: newUser}, message: "New user added successfully" }); // or return all courses data: {courses}
-   
-
-        }
+        
+       return res.json({ status: 'success', data: {user: newUser}, message: "New user added successfully" }); // or return all courses data: {courses}
+     
+    }
     
 
         
@@ -72,6 +80,7 @@ const login = async (req, res) => {
 
         if(!email && !password ){
 
+          
             return res.json({ status: 'error', data: null, message: "Email and password should not be empty"})
         
         }else{
@@ -84,7 +93,18 @@ const login = async (req, res) => {
             const matchedPassword = await bcrypt.compare( password, user.password ); // user.password it comes from the req.body password
 
             if(user && matchedPassword){
-                return res.json({ status: 'success', data:{user }})
+               //login in successfully
+                //return res.json({ status: 'success', data:{user }, message: "user logged in successfully"})
+
+                //return the token 
+                const token = await  jwt.sign({
+                    email: user.email,
+                    id: user._id
+                        }, 
+                    process.env.JWT_SECRET_KEY, 
+                    { expiresIn: '10minutes'}
+                    );
+                return res.json({ status: 'success', data:{ token }, message: "user logged in successfully"})
             }
         }
         
