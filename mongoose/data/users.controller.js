@@ -2,11 +2,12 @@
 const User = require('../models/users.model');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const {} = require("../utils/generateJWT")
+
+//const {} = require("../utils/generateJWT")
 
 //get all users
 const getAllUsers = async (req, res) => { 
-
+//console.log("request headers's is", req.headers)
     try{
         const query = req.query; 
         const limit = query.limit; 
@@ -74,7 +75,7 @@ const register = async (req, res) => {
 
 
 const login = async (req, res) => {
-
+    console.log("request headers is:", req.headers)
     try{
         const { email, password } = req.body;
 
